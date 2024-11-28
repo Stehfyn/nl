@@ -16,7 +16,7 @@ main(
     if(fp)
     {
       size_t sz = 0;
-      (void) fseek(fp, 0L, SEEK_END);
+      (void) fseek(fp, (long)0, SEEK_END);
       sz = (size_t)ftell(fp);
       if(sz)
       {
@@ -27,7 +27,8 @@ main(
           int tokens = argc - 1;
           rewind(fp);
           (void) fread(buf, 1, sz, fp);
-          for(int i = 0; i < (long)sz; ++i)
+          (void) setvbuf(fp, NULL, _IOFBF, BUFSIZ);
+          for(int i = 0; (size_t)i < sz; ++i)
           {
             for(int j = 0; j < tokens; ++j)
             {
@@ -36,7 +37,8 @@ main(
               for(int k = 0; k < len; ++k)
               {
                 int stable_index = i + k;
-                if(i + len >= (long)sz)
+                int next_index = stable_index + 1;
+                if(sz <= (size_t)(i + len))
                 {
                   break;
                 }
@@ -48,17 +50,20 @@ main(
                 {
                   continue;
                 }
-                else if(insert_index < (long)(sz + byte_drift))
+                if(insert_index < (long)(sz + byte_drift))
                 {
-                  (void) fseek(fp, (long)insert_index, SEEK_SET);
-                  (void) fwrite("\n", 1, 1, fp);
-                  
-                  if(!isspace(buf[stable_index + 1]))
+                  if(buf[next_index] != '\n')
                   {
-                    (void) fwrite(&buf[stable_index + 1], 1, sz - stable_index - 1 , fp);
-                    ++byte_drift;
+                    (void) fseek(fp, (long)insert_index, SEEK_SET);
+                    (void) fwrite("\n", 1, 1, fp);
+                    
+                    if(!isspace(buf[next_index]))
+                    {
+                      (void) fwrite(&buf[next_index], 1, sz - stable_index - 1, fp);
+                      ++byte_drift;
+                    }
+                    buf[next_index] = '\n';
                   }
-                  buf[stable_index + 1] = '\n';
                 }
                 break;
               }
