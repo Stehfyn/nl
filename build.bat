@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 set target_dir=x64
-set flags=/nologo /O2 /Oi /std:c11 /Wall /wd5045 /WX /D "NDEBUG" /D UNICODE /D _UNICODE 
+set flags=/nologo /O2 /Oi /MT /std:c11 /Wall /wd5045 /WX /D _NDEBUG /D UNICODE /D _UNICODE
 set sources=..\nl.c
 
 set root="%~dp0"
