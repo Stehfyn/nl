@@ -9,14 +9,14 @@ set root="%~dp0"
 pushd %root%
 
 if not defined DevEnvDir (
-    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
-    if errorlevel 1 (
-        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
-    )
-    if errorlevel 1 (
-       echo vcvars64.bat not found
-       (goto fail)
-    )
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+if errorlevel 1 (
+    call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+)
+if errorlevel 1 (
+    echo vcvars64.bat not found
+    (goto fail)
+)
 )
 
 rmdir /s /q %target_dir%
@@ -25,14 +25,8 @@ pushd %target_dir%
 
 cl %flags% /Tc %sources% 
 
-if errorlevel 1 (goto fail)
-
-:success
-popd
-popd
-exit /b 0
-
 :fail
 popd
 popd
-exit /b 1
+
+exit /b errorlevel
